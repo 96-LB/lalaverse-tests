@@ -1,3 +1,15 @@
+# Project-specific
+.token
+
+
+# My stuff
+\!TODO
+.breakpoints
+replit.nix
+.replit
+.vscode
+/data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
