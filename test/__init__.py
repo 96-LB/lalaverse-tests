@@ -12,18 +12,17 @@ T = TypeVar('T')
 
 # TODO: major code cleanup
 class LalaTestCase(TestCase):
-    
-    def setUp(self) -> None:
-        print(f' Running {self.id()}')
-        return super().setUp()
-    
-    
+       
     def assertIns(self, members: Iterable[T], container: Iterable[T] | Container[T], msg: Any = None) -> None:
         for member in members:
             self.assertIn(member, container, msg)
     
     
-    def getFromDict(self, data: dict[str, T], keys: Iterable[str], msg: Any = None) -> Iterable[T]:
+    def getItem(self, obj: dict[str, T], key: str, msg: Any = None) -> T:
+        self.assertIn(key, obj, msg)
+        return obj[key]
+    
+    def getItems(self, data: dict[str, T], keys: Iterable[str], msg: Any = None) -> Iterable[T]:
         for key in keys:
             self.assertIn(key, data, msg)
             yield data[key]
@@ -50,7 +49,7 @@ class LalaTestCase(TestCase):
     
     
     def random_str(self, len: int = 10) -> str:
-        return ''.join('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._' for _ in range(len))
+        return ''.join(random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._') for _ in range(len))
     
     
     def random_int(self, len: int = 10) -> int:
