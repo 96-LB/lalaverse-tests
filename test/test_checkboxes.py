@@ -7,7 +7,7 @@ from .util import random_bool, random_str
 
 class CheckboxesTestCase(LalaTestCase):
     
-    def test_checkboxes_on_creation(self):
+    def test_checkbox_creation(self):
         N = 3
         checkboxes = [random_str() for _ in range(N)]
         expected = [{'name': i, 'checked': False} for i in checkboxes]
