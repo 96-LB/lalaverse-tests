@@ -84,7 +84,7 @@ def get_data(response: requests.Response) -> DataType:
     if json.get('ok'):
         return json.get('data')
     else:
-        raise Exception(f'Failed to fetch data: {json.get("status")} {json.get("message")}')
+        raise Exception(f'Failed to fetch data: [{json.get("status")}] {json.get("message")}')
 
 
 

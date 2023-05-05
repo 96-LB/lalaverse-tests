@@ -60,10 +60,12 @@ class RegularTestCase(LalaTestCase):
     
     def test_patch_regular(self):
         with self.temp_regular() as (uuid, regular):
-            regular['name'] = random_str()
+            regular['max_cooldown'] += 1
+            regular['quest']['name'] = random_str()
             
             response = api.patch('regulars/' + uuid, {
-                'name': regular['name']
+                'max_cooldown': regular['max_cooldown'],
+                'name': regular['quest']['name']
             })
             response = self.cast(response, dict[str, Any],
                                 'Regular patch response is not a dictionary.')

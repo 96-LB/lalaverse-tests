@@ -16,7 +16,6 @@ class DailiesTestCase(LalaTestCase):
     
     
     def test_invalid_daily(self):
-        print('made it here!')
         with self.assertApiError(400, 'Expected bad request error for missing argument.'):
             api.post('dailies', {
                 'description': random_str(),

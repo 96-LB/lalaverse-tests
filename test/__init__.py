@@ -23,7 +23,9 @@ class LalaTestCase(TestCase):
     
     def assertDictHas(self, data: dict[str, T], msg: Any = None, **kwargs: T) -> None:
         self.assertIsInstance(data, dict, msg)
-        self.assertEqual(data, data | kwargs, msg)
+        for key, value in kwargs.items():
+            self.assertIn(key, data, msg)
+            self.assertEqual(data[key], value, msg)
     
     
     def getItem(self, obj: dict[str, T], key: str, msg: Any = None) -> T:
@@ -154,12 +156,12 @@ class LalaTestCase(TestCase):
             self.delete_daily(uuid)
     
     
-    def make_regular(self, name: str = ..., description: str = ..., difficulty: int = ..., min_cooldown: int = ..., max_cooldown: int = ...):
+    def make_regular(self, name: str = ..., description: str = ..., difficulty: int = ..., min_cooldown: float = ..., max_cooldown: float = ...):
         name = random_str() if name is ... else name
         description = random_str() if description is ... else description
         difficulty = random_int() if difficulty is ... else difficulty
-        min_cooldown = random_int() if min_cooldown is ... else min_cooldown
-        max_cooldown = min_cooldown + random_int() if max_cooldown is ... else max_cooldown
+        min_cooldown = random_float() if min_cooldown is ... else min_cooldown
+        max_cooldown = min_cooldown + random_float() if max_cooldown is ... else max_cooldown
         
         response = api.post('regulars', {
             'name': name,
@@ -179,11 +181,20 @@ class LalaTestCase(TestCase):
         self.assertDictHas(
             regular,
             'Created regular doesn\'t match inputs.',
+            min_cooldown=min_cooldown,
+            max_cooldown=max_cooldown,
+            times_completed=0
+        )
+        
+        quest = self.getItem(regular, 'quest', 'Created regular is missing quest.')
+        quest = self.cast(quest, dict[str, Any], 'Quest of created regular is not a dictionary.')
+        
+        self.assertDictHas(
+            quest,
+            'Quest of created regular doesn\'t match inputs.',
             name=name,
             description=description,
-            difficulty=difficulty,
-            min_cooldown=min_cooldown,
-            max_cooldown=max_cooldown
+            difficulty=difficulty
         )
         
         return uuid, regular
@@ -197,7 +208,7 @@ class LalaTestCase(TestCase):
     
     
     @contextmanager
-    def temp_regular(self, name: str = ..., description: str = ..., difficulty: int = ..., min_cooldown: int = ..., max_cooldown: int = ...) -> Generator[tuple[str, dict[str, Any]], None, None]:
+    def temp_regular(self, name: str = ..., description: str = ..., difficulty: int = ..., min_cooldown: float = ..., max_cooldown: float = ...) -> Generator[tuple[str, dict[str, Any]], None, None]:
         uuid, regular = self.make_regular(name, description, difficulty, min_cooldown, max_cooldown)
         try:
             yield uuid, regular
