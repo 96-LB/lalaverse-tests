@@ -79,5 +79,3 @@ class CheckboxesTestCase(LalaTestCase):
             response = api.get(f'quests/{uuid}/checkboxes')
             self.assertEqual(response, expected,
                             'Checkbox list has incorrect data.')
-
-        

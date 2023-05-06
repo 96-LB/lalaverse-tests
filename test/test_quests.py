@@ -95,3 +95,33 @@ class QuestsTestCase(LalaTestCase):
             self.assertIn(uuid, all_quests, 'Quest not in quest list.')
             self.assertNotIn(uuid, active_quests, 'Completed quest in active quest list.')
             self.assertNotIn(uuid, daily_quests, 'Normal quest is in daily quest list.')
+    
+    
+    def test_quest_chaining(self):
+        with self.temp_quest(deadline=9999999999.0) as (uuid1, _, _):
+            with self.temp_quest(prereqs=[uuid1], deadline=9999999999.0) as (uuid2, _, _):
+                active_quests = api.get('quests/active')
+                active_quests = self.cast(active_quests, dict[str, Any], 'Active quest list is not a dictionary.')
+                
+                self.assertIn(uuid1, active_quests, 'Quest not in active quest list.')
+                self.assertNotIn(uuid2, active_quests, 'Quest with prereq in active quest list.')
+                
+                response = api.get(f'quests/{uuid1}/prereqs')
+                self.assertEqual(response, [], 'Quest prereqs list incorrect.')
+                
+                response = api.get(f'quests/{uuid1}/sequels')
+                self.assertEqual(response, [uuid2], 'Quest sequels list incorrect.')
+                
+                response = api.get(f'quests/{uuid2}/prereqs')
+                self.assertEqual(response, [uuid1], 'Quest prereqs list incorrect.')
+                
+                response = api.get(f'quests/{uuid2}/sequels')
+                self.assertEqual(response, [], 'Quest sequels list incorrect.')
+                
+                api.post(f'quests/{uuid1}/complete')
+                
+                active_quests = api.get('quests/active')
+                active_quests = self.cast(active_quests, dict[str, Any], 'Active quest list is not a dictionary.')
+                
+                self.assertNotIn(uuid1, active_quests, 'Completed quest in active quest list.')
+                self.assertIn(uuid2, active_quests, 'Quest not in active quest list.')
