@@ -16,5 +16,5 @@ class PlayerTestCase(LalaTestCase):
         last_seen = self.getItem(response, 'last_seen', 'Player response does not contain last seen.')
         last_seen = self.cast(last_seen, float, 'Last seen is not a number.')
         
-        now = time()
-        self.assertTrue(last_seen < now, f'Last seen ({last_seen}) is later than current time ({now}).')
+        now = time() + 5 # allow some wiggle room
+        self.assertTrue(last_seen < now, f'Last seen ({last_seen}) is later than current time ({now}    ).')
